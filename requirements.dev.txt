@@ -1,0 +1,6 @@
+Django>=3.2.4,<3.3
+djangorestframework>=3.12.4,<3.13
+python-dotenv>=0.20.0,<0.21
+flake8>=4.0.1,<4.1
+autopep8>=1.6.0,<1.7
+psycopg2-binary>=2.9.3,<3.0.0
