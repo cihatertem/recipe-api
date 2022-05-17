@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = getenv('SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if getenv('DEBUG') == 'True' else getenv('')
+DEBUG = True if getenv('DEBUG') == 'True' else False
 
 ALLOWED_HOSTS = [
     getenv('ALLOWED_ONE'),
@@ -87,7 +87,7 @@ WSGI_APPLICATION = 'app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "devsearch",
+        'NAME': "recipe-api",
         "USER": getenv("DB_USER"),
         "PASSWORD": getenv("DB_PASS"),
         "HOST": getenv("DB_HOST"),
@@ -138,3 +138,7 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Project changes
+# https://docs.djangoproject.com/en/3.2/ref/settings/#auth-user-model
+AUTH_USER_MODEL = 'core.User'

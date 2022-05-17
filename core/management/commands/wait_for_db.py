@@ -12,6 +12,7 @@ class Command(BaseCommand):
     """
     Django command to wait for database for database.
     """
+    # https://docs.djangoproject.com/en/3.2/howto/custom-management-commands/
 
     def handle(self, *args: Any, **options: Any) -> Optional[str]:
         """
