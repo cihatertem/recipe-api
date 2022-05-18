@@ -1,0 +1,17 @@
+DEBUG=True-False
+SECRET=django-settings-secret-key
+EMAIL_HOST_USER=email-backend-user
+EMAIL_HOST_PASSWORD=email-backend-password
+EMAIL=your-email-adress
+ADMIN_ADDRESS=custom-admin-url
+ALLOWED_ONE=127.0.0.1
+ALLOWED_TWO=localhost
+VIEW_BASED=func-class-basedwiew
+AWS_ACCESS=amazon-web-service-access
+AWS_ACCESS_SECRET=amazon-web-service-access-secret
+BUCKET_NAME=aws-s3-bucketname
+DB_HOST=database-host-url
+DB_PASS=database-password
+DB_USER=database-username
+DB_NAME=database-name
+DB_PORT=database-port

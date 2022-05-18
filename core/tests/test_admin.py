@@ -5,6 +5,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.http.response import HttpResponse
+from core.models import User as CustomUserModel
 
 
 class AdminSiteTest(TestCase):
@@ -18,13 +19,13 @@ class AdminSiteTest(TestCase):
         """
         # https://docs.djangoproject.com/en/3.2/topics/testing/tools/#overview-and-a-quick-example
         self.client = Client()
-        User = get_user_model()
-        self.admin_user = User.objects.create_superuser(
+        User: CustomUserModel = get_user_model()
+        self.admin_user: CustomUserModel = User.objects.create_superuser(
             email='admin@example.com',
             password='testpass123'
         )
         self.client.force_login(self.admin_user)
-        self.user = User.objects.create_user(
+        self.user: CustomUserModel = User.objects.create_user(
             email='user@example.com',
             password='testpass123',
             name='Test User'

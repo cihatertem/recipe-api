@@ -44,10 +44,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # third parties
-    'rest_framework',
     # project apps,
     'core.apps.CoreConfig',
+    'user.apps.UserConfig',
+    # third parties
+    # https://www.django-rest-framework.org/
+    'rest_framework',
+    'rest_framework.authtoken',
+    # https://pypi.org/project/drf-spectacular/
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -87,11 +92,11 @@ WSGI_APPLICATION = 'app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "recipe-api",
+        'NAME': getenv('DB_NAME'),
         "USER": getenv("DB_USER"),
         "PASSWORD": getenv("DB_PASS"),
         "HOST": getenv("DB_HOST"),
-        "PORT": "5432",
+        "PORT": getenv('DB_PORT'),
     }
 }
 
@@ -142,3 +147,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Project changes
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-user-model
 AUTH_USER_MODEL = 'core.User'
+
+REST_FRAMEWORK = {
+    # YOUR SETTINGS
+    # https://drf-spectacular.readthedocs.io/en/latest/readme.html#installation
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}

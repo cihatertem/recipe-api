@@ -4,6 +4,7 @@ Tests for models.
 from django.test import TestCase
 # https://docs.djangoproject.com/en/3.2/topics/auth/customizing/#django.contrib.auth.get_user_model
 from django.contrib.auth import get_user_model
+from core.models import User as CustomUserModel
 
 
 class ModelTests(TestCase):
@@ -15,10 +16,10 @@ class ModelTests(TestCase):
         """
         Test creating a user with an email is successful.
         """
-        User = get_user_model()
+        User: CustomUserModel = get_user_model()
         email: str = 'test@example.com'
         password: str = 'abcdef123'
-        user: User = User.objects.create_user(
+        user: CustomUserModel = User.objects.create_user(
             email=email,
             password=password
         )
@@ -41,8 +42,11 @@ class ModelTests(TestCase):
         ]
 
         for email, expected_email in sample_email:
-            User = get_user_model()
-            user: User = User.objects.create_user(email, 'testpass123')
+            User: CustomUserModel = get_user_model()
+            user: CustomUserModel = User.objects.create_user(
+                email=email,
+                password='testpass123'
+            )
             self.assertEqual(user.email, expected_email)
 
     def test_new_user_without_email_raises_error(self) -> None:
@@ -51,15 +55,15 @@ class ModelTests(TestCase):
         raises a ValueError
         """
         with self.assertRaises(ValueError):
-            User = get_user_model()
+            User: CustomUserModel = get_user_model()
             User.objects.create_user('', 'testpass123')
 
     def test_create_superuser(self) -> None:
         """
         Test creating a superuser.
         """
-        User = get_user_model()
-        user: User = User.objects.create_superuser(
+        User: CustomUserModel = get_user_model()
+        user: CustomUserModel = User.objects.create_superuser(
             email='test@example.com',
             password='testpass123'
         )
