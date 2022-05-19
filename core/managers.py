@@ -16,7 +16,7 @@ class UserManager(BaseUserManager):
             **extra_fields
     ) -> User:
         """
-        Create, save and return an user.
+        Create, save and return a user.
         """
         if not email or email is None:
             raise ValueError('User must have an email address.')
@@ -37,5 +37,5 @@ class UserManager(BaseUserManager):
         user: User = self.create_user(email, password)
         user.is_staff = True
         user.is_superuser = True
-        user.save(using=self._db)
+        user.save(using=self.db)
         return user

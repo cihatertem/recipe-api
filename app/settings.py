@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     # project apps,
     'core.apps.CoreConfig',
     'user.apps.UserConfig',
+    'recipe.apps.RecipeConfig',
     # third parties
     # https://www.django-rest-framework.org/
     'rest_framework',

@@ -4,22 +4,26 @@ Tests for models.
 from django.test import TestCase
 # https://docs.djangoproject.com/en/3.2/topics/auth/customizing/#django.contrib.auth.get_user_model
 from django.contrib.auth import get_user_model
-from core.models import User as CustomUserModel
+from core.models import (
+    User as CustomUserModel,
+    Recipe
+)
+from decimal import Decimal
 
 
 class ModelTests(TestCase):
     """
     Test Models.
     """
+    User: CustomUserModel = get_user_model()
 
     def test_create_user_with_email_successful(self) -> None:
         """
         Test creating a user with an email is successful.
         """
-        User: CustomUserModel = get_user_model()
         email: str = 'test@example.com'
         password: str = 'abcdef123'
-        user: CustomUserModel = User.objects.create_user(
+        user: CustomUserModel = self.User.objects.create_user(
             email=email,
             password=password
         )
@@ -42,8 +46,7 @@ class ModelTests(TestCase):
         ]
 
         for email, expected_email in sample_email:
-            User: CustomUserModel = get_user_model()
-            user: CustomUserModel = User.objects.create_user(
+            user: CustomUserModel = self.User.objects.create_user(
                 email=email,
                 password='testpass123'
             )
@@ -55,17 +58,34 @@ class ModelTests(TestCase):
         raises a ValueError
         """
         with self.assertRaises(ValueError):
-            User: CustomUserModel = get_user_model()
-            User.objects.create_user('', 'testpass123')
+            self.User.objects.create_user('', 'testpass123')
 
     def test_create_superuser(self) -> None:
         """
         Test creating a superuser.
         """
-        User: CustomUserModel = get_user_model()
-        user: CustomUserModel = User.objects.create_superuser(
+        user: CustomUserModel = self.User.objects.create_superuser(
             email='test@example.com',
             password='testpass123'
         )
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
+
+    def test_create_recipe(self) -> None:
+        """
+        Test creating a recipe is successful.
+        """
+        user: CustomUserModel = self.User.objects.create_user(
+            email='test@example.com',
+            password='testpass123'
+        )
+
+        recipe: Recipe = Recipe.objects.create(
+            user=user,
+            title='Sample recipe name',
+            time_minutes=5,
+            price=Decimal('5.50'),
+            description='Sample recipe description'
+        )
+
+        self.assertEqual(str(recipe), recipe.title)
