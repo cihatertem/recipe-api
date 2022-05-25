@@ -6,8 +6,10 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from core.models import (
     User as CustomUserModel,
-    Recipe
+    Recipe,
+    Tag
 )
+from core.tests.utils import create_user
 from decimal import Decimal
 
 
@@ -89,3 +91,11 @@ class ModelTests(TestCase):
         )
 
         self.assertEqual(str(recipe), recipe.title)
+
+    def test_create_tag(self) -> None:
+        """
+        Test creating a tag is successful.
+        """
+        user: CustomUserModel = create_user()
+        tag: Tag = Tag.objects.create(user=user, name='Tag')
+        self.assertEqual(str(tag), tag.name)

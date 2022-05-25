@@ -3,7 +3,7 @@ Tools for Recipe Tests
 """
 from django.urls import reverse
 from decimal import Decimal
-from core.models import Recipe, User as CustomUserModel
+from core.models import Recipe, Tag, User as CustomUser
 from django.contrib.auth import get_user_model
 
 
@@ -35,9 +35,23 @@ def detail_url(recipe_id) -> str:
     return reverse('recipe:recipe-detail', args=[recipe_id])
 
 
-def create_user(**params) -> CustomUserModel:
+def create_user(**params) -> CustomUser:
     """
     Create and return a new user.
     """
-    User: CustomUserModel = get_user_model()
+    User: CustomUser = get_user_model()
     return User.objects.create_user(**params)
+
+
+def create_tag(user: CustomUser, name: str) -> None:
+    """
+    Create and return a tag.
+    """
+    return Tag.objects.create(user=user, name=name)
+
+
+def tag_detail_url(tag_id: str) -> str:
+    """
+    Create and return a tag detail url.
+    """
+    return reverse('recipe:tag-detail', args=[tag_id])

@@ -48,6 +48,25 @@ class Recipe(models.Model):
     price = models.DecimalField(max_digits=5, decimal_places=2)
     description = models.TextField(blank=True)
     link = models.CharField(max_length=255, blank=True)
+    tags = models.ManyToManyField('Tag')
 
     def __str__(self) -> str:
         return str(self.title)
+
+
+class Tag(models.Model):
+    """
+    Tag for filtering recipes.
+    """
+    id = models.UUIDField(
+        default=uuid4,
+        unique=True,
+        primary_key=True,
+        editable=False
+    )
+    name = models.CharField(max_length=255)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE, related_name='tags')
+
+    def __str__(self) -> str:
+        return self.name[:25]
