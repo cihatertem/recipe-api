@@ -5,9 +5,10 @@ from django.test import TestCase
 # https://docs.djangoproject.com/en/3.2/topics/auth/customizing/#django.contrib.auth.get_user_model
 from django.contrib.auth import get_user_model
 from core.models import (
-    User as CustomUserModel,
+    User as CustomUser,
     Recipe,
-    Tag
+    Tag,
+    Ingredient
 )
 from core.tests.utils import create_user
 from decimal import Decimal
@@ -17,7 +18,7 @@ class ModelTests(TestCase):
     """
     Test Models.
     """
-    User: CustomUserModel = get_user_model()
+    User: CustomUser = get_user_model()
 
     def test_create_user_with_email_successful(self) -> None:
         """
@@ -25,7 +26,7 @@ class ModelTests(TestCase):
         """
         email: str = 'test@example.com'
         password: str = 'abcdef123'
-        user: CustomUserModel = self.User.objects.create_user(
+        user: CustomUser = self.User.objects.create_user(
             email=email,
             password=password
         )
@@ -48,7 +49,7 @@ class ModelTests(TestCase):
         ]
 
         for email, expected_email in sample_email:
-            user: CustomUserModel = self.User.objects.create_user(
+            user: CustomUser = self.User.objects.create_user(
                 email=email,
                 password='testpass123'
             )
@@ -66,7 +67,7 @@ class ModelTests(TestCase):
         """
         Test creating a superuser.
         """
-        user: CustomUserModel = self.User.objects.create_superuser(
+        user: CustomUser = self.User.objects.create_superuser(
             email='test@example.com',
             password='testpass123'
         )
@@ -77,7 +78,7 @@ class ModelTests(TestCase):
         """
         Test creating a recipe is successful.
         """
-        user: CustomUserModel = self.User.objects.create_user(
+        user: CustomUser = self.User.objects.create_user(
             email='test@example.com',
             password='testpass123'
         )
@@ -96,6 +97,18 @@ class ModelTests(TestCase):
         """
         Test creating a tag is successful.
         """
-        user: CustomUserModel = create_user()
+        user: CustomUser = create_user()
         tag: Tag = Tag.objects.create(user=user, name='Tag')
         self.assertEqual(str(tag), tag.name)
+
+    def test_create_ingredient(self) -> None:
+        """
+        Test creating an ingredient successful.
+        """
+        user: CustomUser = create_user()
+        ingredient: Ingredient = Ingredient.objects.create(
+            user=user,
+            name='Ingredient1'
+        )
+
+        self.assertEqual(str(ingredient), ingredient.name)

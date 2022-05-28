@@ -3,6 +3,7 @@ Tests for the tags API.
 """
 from django.urls import reverse
 from django.test import TestCase
+from django.db.models import QuerySet
 from rest_framework import status
 from rest_framework.test import APIClient
 from rest_framework.response import Response
@@ -56,7 +57,7 @@ class PrivateTagsApiTests(TestCase):
             create_tag(user=self.user, name=f'Tag{i+1}')
 
         res: Response = self.client.get(TAGS_URL)
-        tags: Tag = Tag.objects.all().order_by('-name')
+        tags: QuerySet[Tag] = Tag.objects.all().order_by('-name')
         serializer: TagSerializer = TagSerializer(tags, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
@@ -99,5 +100,5 @@ class PrivateTagsApiTests(TestCase):
         url: str = tag_detail_url(tag_id=tag.id)
         res: Response = self.client.delete(url)
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
-        tags: Tag = Tag.objects.filter(user=self.user)
+        tags: QuerySet[Tag] = Tag.objects.filter(user=self.user)
         self.assertFalse(tags.exists())
