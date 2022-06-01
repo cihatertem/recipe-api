@@ -2,9 +2,6 @@
 Tests for Recipe APIs.
 """
 from decimal import Decimal
-from genericpath import exists
-from hashlib import new
-from unicodedata import name
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -12,16 +9,19 @@ from django.db.models import QuerySet
 from rest_framework import status
 from rest_framework.test import APIClient
 from rest_framework.response import Response
-from core.models import Recipe, Tag, Ingredient, User as CustomUserModel
-import recipe
+from core.models import Recipe, Tag, Ingredient, User as CustomUser
 from recipe.serializers import RecipeSerializer, RecipeDetailSerializer
 from recipe.tests.utils import (
     create_recipe,
     detail_url,
     create_user,
     create_tag,
-    create_ingredient
+    create_ingredient,
+    image_upload_url
 )
+import tempfile  # https://docs.python.org/3/library/tempfile.html#tempfile.NamedTemporaryFile
+import os
+from PIL import Image
 
 RECIPES_URL: str = reverse('recipe:recipe-list')
 
@@ -55,8 +55,8 @@ class PrivateRecipeAPITests(TestCase):
         Set tests' tools up.
         """
         self.client = APIClient()
-        self.User: CustomUserModel = get_user_model()
-        self.user: CustomUserModel = create_user(
+        self.User: CustomUser = get_user_model()
+        self.user: CustomUser = create_user(
             email='test@example.com',
             password='testpass123'
         )
@@ -80,7 +80,7 @@ class PrivateRecipeAPITests(TestCase):
         """
         Test list of recipes is limited to authenticated user.
         """
-        other_user: CustomUserModel = create_user(
+        other_user: CustomUser = create_user(
             email='otheruser@example.com',
             password='otherpass123'
         )
@@ -179,7 +179,7 @@ class PrivateRecipeAPITests(TestCase):
         """
         Test changing the recipe user results in an error.
         """
-        new_user: CustomUserModel = create_user(
+        new_user: CustomUser = create_user(
             email='testuser2@example.com',
             password='testpass13'
         )
@@ -206,7 +206,7 @@ class PrivateRecipeAPITests(TestCase):
         """
         Test tyring to delete another users recipe gives error.
         """
-        new_user: CustomUserModel = create_user(
+        new_user: CustomUser = create_user(
             email='user2@example.com',
             password='testpass123'
         )
@@ -436,3 +436,55 @@ class PrivateRecipeAPITests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(recipe.ingredients.count(), 0)
+
+
+class ImageUploadTest(TestCase):
+    """
+    Tests for image upload API.
+    """
+
+    def setUp(self) -> None:
+        """
+        Setup for API test.
+        """
+        self.client: APIClient = APIClient()
+        self.user: CustomUser = create_user()
+        self.client.force_authenticate(self.user)
+        self.recipe: Recipe = create_recipe(user=self.user)
+
+    def tearDown(self) -> None:
+        """
+        Clean uploaded test image files after test end.
+        """
+        self.recipe.image.delete()
+
+    def test_upload_image(self) -> None:
+        """
+        Test uploading an image to a recipe.
+        """
+        url: str = image_upload_url(self.recipe.id)
+        # https://docs.python.org/3/library/tempfile.html#tempfile.NamedTemporaryFile
+        with tempfile.NamedTemporaryFile(suffix='.jpg') as image_file:
+            img: Image.Image = Image.new('RGB', (10, 10))
+            img.save(image_file, format='JPEG')
+            image_file.seek(0)
+            payload: dict = {
+                'image': image_file
+            }
+            res: Response = self.client.post(url, payload, format='multipart')
+
+        self.recipe.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn('image', res.data)
+        self.assertTrue(os.path.exists(self.recipe.image.path))
+
+    def test_upload_image_bad_request(self) -> None:
+        """
+        Test uploading invalid image.
+        """
+        url: str = image_upload_url(self.recipe.id)
+        payload: dict = {
+            'image': 'notanimage'
+        }
+        res: Response = self.client.post(url, payload, format='multipart')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)

@@ -8,10 +8,13 @@ from core.models import (
     User as CustomUser,
     Recipe,
     Tag,
-    Ingredient
+    Ingredient,
+    recipe_image_file_path
 )
 from core.tests.utils import create_user
 from decimal import Decimal
+from unittest.mock import patch
+from uuid import UUID
 
 
 class ModelTests(TestCase):
@@ -112,3 +115,14 @@ class ModelTests(TestCase):
         )
 
         self.assertEqual(str(ingredient), ingredient.name)
+
+    @patch('core.models.uuid.uuid4')
+    def test_recipe_file_name_uuid(self, mock_uuid: UUID):
+        """
+        Test genering image path.
+        """
+        uuid: str = 'test-uuid'
+        mock_uuid.return_value = uuid
+        file_path: str = recipe_image_file_path(None, 'example.jpg')
+
+        self.assertEqual(file_path, f'uploads/recipe/{uuid}.jpg')

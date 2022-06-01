@@ -84,3 +84,10 @@ def ingredient_detail_url(ingredient_id: str) -> str:
     Create and return an ingredient detail url.
     """
     return reverse('recipe:ingredient-detail', args=[ingredient_id])
+
+
+def image_upload_url(recipe_id: str) -> str:
+    """
+    Create and return image upload url.
+    """
+    return reverse('recipe:recipe-upload-image', args=[recipe_id])

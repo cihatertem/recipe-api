@@ -138,7 +138,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL: str = '/static/'
+MEDIA_URL: str = '/media/'
+
+STATIC_ROOT: str = BASE_DIR / 'static/'
+MEDIA_ROOT: str = BASE_DIR / 'media/'
+
+STATICFILES_DIRS: list = [
+    BASE_DIR / "staticfiles/",
+]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -153,4 +162,10 @@ REST_FRAMEWORK = {
     # YOUR SETTINGS
     # https://drf-spectacular.readthedocs.io/en/latest/readme.html#installation
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# https://drf-spectacular.readthedocs.io/en/latest/faq.html#filefield-imagefield-is-not-handled-properly-in-the-schema
+# browsable interface image upload support.
+SPECTACULAR_SETTINGS = {
+    'COMPONENT_SPLIT_REQUEST': True,
 }

@@ -7,8 +7,19 @@ from django.contrib.auth.models import (
     AbstractBaseUser,
     PermissionsMixin,
 )
-from uuid import uuid4
+import uuid
 from core.managers import UserManager
+import os
+
+
+def recipe_image_file_path(instance, filename) -> str:
+    """
+    Generate file path for new recipe image.
+    """
+    file_extension: str = os.path.splitext(filename)[1]
+    filename: str = f'{uuid.uuid4()}{file_extension}'
+
+    return os.path.join('uploads', 'recipe', filename)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -16,7 +27,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     Customized User Model in the System.
     """
     id = models.UUIDField(
-        default=uuid4,
+        default=uuid.uuid4,
         unique=True,
         primary_key=True,
         editable=False
@@ -35,7 +46,7 @@ class Recipe(models.Model):
     Recipe object.
     """
     id = models.UUIDField(
-        default=uuid4,
+        default=uuid.uuid4,
         unique=True,
         primary_key=True,
         editable=False
@@ -50,6 +61,7 @@ class Recipe(models.Model):
     link = models.CharField(max_length=255, blank=True)
     tags = models.ManyToManyField('Tag')
     ingredients = models.ManyToManyField('Ingredient')
+    image = models.ImageField(null=True, upload_to=recipe_image_file_path)
 
     def __str__(self) -> str:
         return str(self.title)
@@ -60,7 +72,7 @@ class Tag(models.Model):
     Tag for filtering recipes.
     """
     id = models.UUIDField(
-        default=uuid4,
+        default=uuid.uuid4,
         unique=True,
         primary_key=True,
         editable=False
@@ -78,7 +90,7 @@ class Ingredient(models.Model):
     Ingredient for recipes.
     """
     id = models.UUIDField(
-        default=uuid4,
+        default=uuid.uuid4,
         unique=True,
         primary_key=True,
         editable=False
