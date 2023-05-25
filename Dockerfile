@@ -14,6 +14,8 @@ RUN python -m venv /venv \
     && /venv/bin/pip install --no-cache-dir -r /tmp/requirements.txt \
     && rm -rf /tmp \
     && adduser \
+    --quiet \
+    --gecos "" \
     --disabled-password \
     --no-create-home \
     django-user
