@@ -18,4 +18,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Test & Lint
+        env:
+          SECRET_KEY: ${{secrets.DJANGO_SECRET_KEY}}
         run: docker-compose up --build app-linting_testing_github

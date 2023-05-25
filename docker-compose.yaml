@@ -24,7 +24,5 @@ services:
       context: .
       target: linting_testing
     init: true
-    environment:
-      - SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
     ports:
       - 8000:8000
