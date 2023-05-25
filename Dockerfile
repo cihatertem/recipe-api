@@ -3,16 +3,17 @@ FROM python:3.10 AS base
 LABEL maintainer="Cihat Ertem"
 LABEL website="https://cihatertem.dev"
 
-COPY /app /app
-
-WORKDIR /app
-
 COPY requirements.txt /tmp/requirements.txt
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3-dev libpq-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN python -m venv /venv \
     && /venv/bin/pip install --upgrade pip \
     && /venv/bin/pip install --no-cache-dir -r /tmp/requirements.txt \
-    && rm -rf /tmp \
+    && rm /tmp/requirements.txt \
     && adduser \
     --quiet \
     --gecos "" \
@@ -28,15 +29,19 @@ ENV DEBUG_MODE=True
 
 EXPOSE 8000
 
-RUN chown -R django-user:django-user /app 
-
 ### Development Stage
 FROM base AS dev
 
 COPY requirements_dev.txt /tmp/requirements_dev.txt
 
 RUN /venv/bin/pip install --no-cache-dir -r /tmp/requirements_dev.txt \
-    && rm -rf /tmp
+    && rm /tmp/requirements_dev.txt
+
+COPY /app /app
+
+WORKDIR /app
+
+RUN chown -R django-user:django-user /app 
 
 USER django-user
 

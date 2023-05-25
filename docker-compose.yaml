@@ -10,6 +10,9 @@ services:
       - 8000:8000
     volumes:
       - ./app:/app:ro
+    depends_on:
+      db:
+        condition: service_healthy
   app-linting_testing:
     build:
       context: .
@@ -19,3 +22,20 @@ services:
       - ./environment/variables.txt
     ports:
       - 8000:8000
+    volumes:
+      - ./app:/app:ro
+  db:
+    image: postgres:15-bullseye
+    env_file:
+      - ./environment/variables.txt
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 2s
+      timeout: 6s
+      retries: 2
+
+volumes:
+  db-data:
+  static-data:

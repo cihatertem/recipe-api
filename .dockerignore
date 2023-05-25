@@ -3,6 +3,7 @@
 .github
 LICENSE
 README.md
+ToDO.md
 venv/
 .env/
 .venv/
@@ -10,6 +11,7 @@ environment/
 Dockerfile
 .docker
 docker-compose.yaml
+db.sqlite3
 app/__pycache__/
 app/*/__pycache__/
 app/*/*/__pycache__/
