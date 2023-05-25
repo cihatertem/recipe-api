@@ -1,0 +1,17 @@
+services:
+  app-dev:
+    build:
+      context: .
+      target: dev
+    init: true
+    ports:
+      - 8000:8000
+    volumes:
+      - ./app:/app:ro
+  app-linting:
+    build:
+      context: .
+      target: linting
+    init: true
+    ports:
+      - 8000:8000

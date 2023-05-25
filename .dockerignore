@@ -1,0 +1,14 @@
+.gitignore
+.git
+LICENSE
+README.md
+venv/
+.env/
+.venv/
+Dockerfile
+.docker
+docker-compose.yaml
+app/__pycache__/
+app/*/__pycache__/
+app/*/*/__pycache__/
+app/*/*/*/__pycache__/
