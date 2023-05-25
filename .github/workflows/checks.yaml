@@ -20,4 +20,6 @@ jobs:
       - name: Test & Lint
         env:
           SECRET_KEY: ${{secrets.DJANGO_SECRET_KEY}}
-        run: docker-compose up --build app-linting_testing_github
+        run: |
+          docker-compose build --target app-linting_testing_github
+          docker-compose up app-linting_testing_github
