@@ -19,10 +19,3 @@ services:
       - ./environment/variables.txt
     ports:
       - 8000:8000
-  app-linting_testing_github:
-    build:
-      context: .
-      target: linting_testing
-    init: true
-    ports:
-      - 8000:8000
