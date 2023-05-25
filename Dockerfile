@@ -27,7 +27,7 @@ EXPOSE 8000
 RUN chown -R django-user:django-user /app 
 
 ### Development Stage
-FROM base as dev
+FROM base AS dev
 
 COPY requirements_dev.txt /tmp/requirements_dev.txt
 
@@ -38,8 +38,7 @@ USER django-user
 
 CMD [ "python", "manage.py", "runserver", "0.0.0.0:8000" ]
 
-### Linting Stage
-FROM dev as linting
+### Linting & Test Stage
+FROM dev AS linting_testing
 
-CMD [ "flake8" ]
-
+CMD python manage.py test && flake8

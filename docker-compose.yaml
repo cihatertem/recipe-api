@@ -8,10 +8,10 @@ services:
       - 8000:8000
     volumes:
       - ./app:/app:ro
-  app-linting:
+  app-linting_testing:
     build:
       context: .
-      target: linting
+      target: linting_testing
     init: true
     ports:
       - 8000:8000
