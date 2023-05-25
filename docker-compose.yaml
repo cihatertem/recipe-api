@@ -4,6 +4,8 @@ services:
       context: .
       target: dev
     init: true
+    env_file:
+      - ./environment/variables.txt
     ports:
       - 8000:8000
     volumes:
@@ -13,5 +15,7 @@ services:
       context: .
       target: linting_testing
     init: true
+    env_file:
+      - ./environment/variables.txt
     ports:
       - 8000:8000

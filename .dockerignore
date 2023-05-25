@@ -6,6 +6,7 @@ README.md
 venv/
 .env/
 .venv/
+environment/
 Dockerfile
 .docker
 docker-compose.yaml

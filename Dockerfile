@@ -24,6 +24,8 @@ ENV PATH="/venv/bin:$PATH"
 
 ENV PYTHONUNBUFFERED=1
 
+ENV DEBUG_MODE=True
+
 EXPOSE 8000
 
 RUN chown -R django-user:django-user /app 
@@ -42,5 +44,7 @@ CMD [ "python", "manage.py", "runserver", "0.0.0.0:8000" ]
 
 ### Linting & Test Stage
 FROM dev AS linting_testing
+
+ENV DEBUG_MODE=False
 
 CMD python manage.py test && flake8
