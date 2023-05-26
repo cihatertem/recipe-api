@@ -9,7 +9,7 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - ./app:/app:ro
+      - ./app:/app
     depends_on:
       db:
         condition: service_healthy
@@ -23,7 +23,10 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - ./app:/app:ro
+      - ./app:/app
+    depends_on:
+      db:
+        condition: service_healthy
   db:
     image: postgres:15-bullseye
     env_file:
