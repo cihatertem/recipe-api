@@ -14,10 +14,12 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "curl", "-f", "localhost:5432"]
+      test:
+        ["CMD-SHELL", "curl", "-f", "http://localhost/ping", "||", "exit", "1"]
       interval: 2s
-      timeout: 6s
-      retries: 2
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
 volumes:
   db-data:
