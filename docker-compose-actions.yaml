@@ -7,17 +7,11 @@ services:
     ports:
       - 8000:8000
     depends_on:
-      db:
-        condition: service_healthy
+      - db
   db:
     image: postgres:15-bullseye
     volumes:
       - db-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
-      interval: 2s
-      timeout: 6s
-      retries: 2
 
 volumes:
   db-data:
