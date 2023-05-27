@@ -40,7 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # project
-    "core.apps.CoreConfig"
+    "core.apps.CoreConfig",
+    # 3th parties,
+    "rest_framework",
+    "drf_spectacular"
 ]
 
 MIDDLEWARE = [
@@ -131,3 +134,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom User Model use email instead username to create a new User object
 AUTH_USER_MODEL = "core.User"
+
+# Restframework Settings
+REST_FRAMEWORK = {
+    # YOUR SETTINGS
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# DRF-Spectacular Settings
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Recipe App API',
+    'DESCRIPTION': 'Recipe App API',
+    "CONTACT": {
+        "name": "Cihat Ertem",
+        "url": "https://cihatertem.dev",
+        "email": "cihatertem@gmail.com"
+    },
+    'VERSION': '1.0.0',
+    # 'SERVE_INCLUDE_SCHEMA': False,
+}
