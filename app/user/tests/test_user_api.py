@@ -14,6 +14,7 @@ from rest_framework.response import Response
 
 
 CREATE_USER_URL = reverse("user:create")
+TOKEN_URL = reverse("user:token")
 
 
 def create_user(**params: Any) -> User:
@@ -77,3 +78,57 @@ class PublicUserApiTests(TestCase):
         ).exists()
 
         self.assertFalse(user_is_exists)
+
+    def test_create_token_for_user(self) -> None:
+        "Test generates token for valid credentials."
+        user_details = {
+            "first_name": "Test",
+            "last_name": "User",
+            "email": "test@example.com",
+            "password": "testpass123"
+        }
+
+        create_user(**user_details)
+
+        payload_to_token_endpoint = {
+            "email": user_details["email"],
+            "password": user_details["password"]
+        }
+
+        response: Response = self.client.post(
+            TOKEN_URL,
+            data=payload_to_token_endpoint
+        )
+
+        self.assertIn("token", response.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_create_token_bad_credentials(self) -> None:
+        """Test returns error if credentials invalid."""
+        create_user(
+            email="test@example.com",
+            password="goodpass123",
+            first_name="Test",
+            last_name="User"
+        )
+
+        payload = {
+            "email": "test@example.com",
+            "password": "badpass123"
+        }
+
+        response: Response = self.client.post(TOKEN_URL, data=payload)
+
+        self.assertNotIn("token", response.data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_token_blank_password(self) -> None:
+        """Test posting a blank password returns an error."""
+        payload = {
+            "email": "test@example.com", "password": ""
+        }
+
+        response: Response = self.client.post(TOKEN_URL, data=payload)
+
+        self.assertNotIn("token", response.data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

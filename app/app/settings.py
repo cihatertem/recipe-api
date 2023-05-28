@@ -44,8 +44,12 @@ INSTALLED_APPS = [
     "user.apps.UserConfig",
     # 3th parties,
     "rest_framework",
+    "rest_framework.authtoken",  # token implementation
     "drf_spectacular"
 ]
+
+if DEBUG:
+    INSTALLED_APPS.append("django_extensions")
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
