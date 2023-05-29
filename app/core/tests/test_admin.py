@@ -64,3 +64,10 @@ class AdminSiteTests(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertFalse(user)
+
+    def test_recipe_admin_page_get(self) -> None:
+        """Test get request Django Admin page for Recipe objects."""
+        recipe_admin_url = reverse("admin:core_recipe_changelist")
+        response: HttpResponse = self.client.get(recipe_admin_url)
+
+        self.assertEqual(response.status_code, 200)

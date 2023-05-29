@@ -3,7 +3,6 @@ Tests for django models.
 """
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import User
 
 from decimal import Decimal
 
@@ -19,8 +18,8 @@ class ModelTests(TestCase):
         email = "test@test.com"
         password = "unsecure123"
 
-        user: User = get_user_model().objects.create_user(email=email,
-                                                          password=password)
+        user: models.User = get_user_model().objects.create_user(email,
+                                                                 password)
 
         self.assertTrue(user.is_active)
         self.assertEqual(user.email, email)
@@ -37,8 +36,10 @@ class ModelTests(TestCase):
         )
 
         for email, expected in emails:
-            user: User = get_user_model().objects.create_user(email,
-                                                              "testpass123")
+            user: models.User = get_user_model().objects.create_user(
+                email,
+                "testpass123"
+            )
 
             self.assertEqual(user.email, expected)
 
@@ -53,21 +54,22 @@ class ModelTests(TestCase):
         email = "test@test.com"
         password = "unsecure123"
 
-        user: User = get_user_model().objects.create_superuser(email, password)
+        user: models.User = get_user_model().objects.create_superuser(email,
+                                                                      password)
 
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
         self.assertEqual(user.email, email)
         self.assertTrue(user.check_password(password))
 
-    def test_create_recipe(self):
+    def test_create_recipe(self) -> None:
         """Test creating a recipe is successful."""
-        user: User = get_user_model().objects.create_user(
+        user: models.User = get_user_model().objects.create_user(
             "test@example.com",
             "testpass123"
         )
 
-        recipe: Recipe = models.Recipe.objects.create(
+        recipe: models.Recipe = models.Recipe.objects.create(
             user=user,
             title="Test recipe",
             time_minutes=5,
