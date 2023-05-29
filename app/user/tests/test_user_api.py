@@ -106,12 +106,10 @@ class PublicUserApiTests(TestCase):
 
     def test_create_token_bad_credentials(self) -> None:
         """Test returns error if credentials invalid."""
-        create_user(
-            email="test@example.com",
-            password="goodpass123",
-            first_name="Test",
-            last_name="User"
-        )
+        create_user(email="test@example.com",
+                    password="goodpass123",
+                    first_name="Test",
+                    last_name="User")
 
         payload = {
             "email": "test@example.com",
@@ -126,7 +124,8 @@ class PublicUserApiTests(TestCase):
     def test_create_token_blank_password(self) -> None:
         """Test posting a blank password returns an error."""
         payload = {
-            "email": "test@example.com", "password": ""
+            "email": "test@example.com",
+            "password": ""
         }
 
         response: Response = self.client.post(TOKEN_URL, data=payload)
@@ -134,7 +133,7 @@ class PublicUserApiTests(TestCase):
         self.assertNotIn("token", response.data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_retrieve_user_unauthorized(self):
+    def test_retrieve_user_unauthorized(self) -> None:
         """Test authentication is required for users."""
         response: Response = self.client.get(ME_URL)
 
@@ -144,37 +143,34 @@ class PublicUserApiTests(TestCase):
         """Test User Api requests that require auhtentication."""
 
         def setUp(self) -> None:
-            self.user = create_user(
-                email="test@example.com",
-                password="testpass123",
-                first_name="Test",
-                last_name="User"
-            )
+            self.user = create_user(email="test@example.com",
+                                    password="testpass123",
+                                    first_name="Test",
+                                    last_name="User")
 
             self.client = APIClient()
             self.client.force_authenticate(user=self.user)
 
-        def test_retrieve_profile_success(self):
+        def test_retrieve_profile_success(self) -> None:
             """Test retrieving profile for logged in user."""
             response: Response = self.client.get(ME_URL)
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            self.assertEqual(response.data, {
-                "email": self.user.email,
-                "first_name": self.user.first_name,
-                "last_name": self.user.last_name
-            })
+            self.assertEqual(response.data,
+                             {
+                                 "email": self.user.email,
+                                 "first_name": self.user.first_name,
+                                 "last_name": self.user.last_name
+                             })
 
-        def test_post_me_not_allowed(self):
+        def test_post_me_not_allowed(self) -> None:
             """Test POST is not allowed for the me endpoint."""
             response: Response = self.client.post(ME_URL, {})
 
-            self.assertEqual(
-                response.status_code,
-                status.HTTP_405_METHOD_NOT_ALLOWED
-            )
+            self.assertEqual(response.status_code,
+                             status.HTTP_405_METHOD_NOT_ALLOWED)
 
-        def test_update_user_profile(self):
+        def test_update_user_profile(self) -> None:
             """Test updating the user profile for the authenticated user."""
             payload = {
                 "first_name": "Updated Test",

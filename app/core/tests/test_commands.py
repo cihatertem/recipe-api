@@ -19,9 +19,9 @@ class CommandsTests(SimpleTestCase):
         patched_check.assert_called_once_with(databases=("default",))
 
     @patch("time.sleep")
-    def test_wait_for_db_delay(
-            self, patched_sleep: MagicMock, patched_check: MagicMock
-    ) -> None:
+    def test_wait_for_db_delay(self,
+                               patched_sleep: MagicMock,
+                               patched_check: MagicMock) -> None:
         """Test waiting for database when getting OperationalError."""
         patched_check.side_effect = \
             [PsycopgError] * 2 + [OperationalError] * 3 + [True]

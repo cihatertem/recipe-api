@@ -158,3 +158,6 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
     # 'SERVE_INCLUDE_SCHEMA': False,
 }
+
+# trailing slash warning silenced
+SILENCED_SYSTEM_CHECKS = ['urls.W002']

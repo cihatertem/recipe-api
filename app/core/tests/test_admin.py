@@ -29,7 +29,7 @@ class AdminSiteTests(TestCase):
             first_name="Cihat"
         )
 
-    def test_users_list(self):
+    def test_users_list(self) -> None:
         """Test that users are listed on page."""
         # https://docs.djangoproject.com/en/4.2/ref/contrib/admin
         # /#reversing-admin-urls
@@ -40,28 +40,26 @@ class AdminSiteTests(TestCase):
         self.assertContains(response, self.user.first_name)
         self.assertContains(response, self.user.email)
 
-    def test_edit_user_page(self):
+    def test_edit_user_page(self) -> None:
         """Test the admin user edit page works."""
         url = reverse("admin:core_user_change", args=(self.user.id,))
         response: HttpResponse = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
 
-    def test_add_user_page(self):
+    def test_add_user_page(self) -> None:
         """Test the admin page's add user section works"""
         url = reverse("admin:core_user_add")
         response: HttpResponse = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
 
-    def test_delete_user_page(self):
+    def test_delete_user_page(self) -> None:
         """Test the admin page's delete user section works."""
         url = reverse("admin:core_user_delete", args=(self.user.id,))
-        response: HttpResponse = self.client.post(
-            url,
-            data={"name": "post",
-                  "value": "yes"}
-        )
+        response: HttpResponse = self.client.post(url,
+                                                  data={"name": "post",
+                                                        "value": "yes"})
         user: User | bool = User.objects.filter(pk=self.user.id).exists()
 
         self.assertEqual(response.status_code, 302)
