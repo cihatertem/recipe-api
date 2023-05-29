@@ -1,5 +1,4 @@
 """Tests for User API"""
-from typing import Any
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
@@ -8,19 +7,14 @@ from rest_framework.test import APIClient
 from rest_framework import status
 
 from core.models import User
+from utils.helpers import create_user
 
-from rest_framework.request import HttpRequest  # noqa
 from rest_framework.response import Response
 
 
 CREATE_USER_URL = reverse("user:create")
 TOKEN_URL = reverse("user:token")
 ME_URL = reverse("user:me")
-
-
-def create_user(**params: Any) -> User:
-    """Create and return a new user."""
-    return get_user_model().objects.create_user(**params)
 
 
 class PublicUserApiTests(TestCase):

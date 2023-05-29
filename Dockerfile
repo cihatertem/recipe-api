@@ -55,7 +55,4 @@ FROM dev AS linting_testing
 
 ENV DEBUG_MODE=False
 
-CMD python manage.py wait_for_db \
-    && python manage.py makemigrations \
-    && python manage.py migrate \
-    && python manage.py test && flake8
+CMD python manage.py test && flake8
