@@ -44,10 +44,7 @@ class PrivateReciperApiTests(TestCase):
         """Client and authenticated user setup for requests' tests."""
 
         self.client = APIClient()
-        self.user = create_user(
-            email="test@example.com",
-            password="testpass123"
-        )
+        self.user = create_user()
 
         self.client.force_authenticate(self.user)
 

@@ -14,6 +14,11 @@ def recipe_detail_url(recipe_id) -> str:
     return reverse("recipe:recipe-detail", args=(recipe_id,))
 
 
+def tag_detail_url(tag_id) -> str:
+    """Create and return a tag detail URL."""
+    return reverse("recipe:tag-detail", args=(tag_id,))
+
+
 def create_recipe(user: User, **params: dict) -> Recipe:
     """Create and return a recipe object."""
     defaults = {

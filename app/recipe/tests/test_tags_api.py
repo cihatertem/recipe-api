@@ -73,3 +73,56 @@ class PrivateTagsApiTests(TestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]["name"], first_user_tag.name)
         self.assertEqual(response.data[0]["user"], first_user_tag.user.id)
+
+    def test_tag_update_action(self) -> None:
+        """Test updating a tag."""
+        tag: Tag = helpers.create_tag(
+            user=self.user,
+            name="Dessert"
+        )
+        payload = {
+            "name": "Fruity"
+        }
+        tag_detail_url = helpers.tag_detail_url(tag.id)
+        response: Response = self.client.put(tag_detail_url, data=payload)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        tag.refresh_from_db()
+
+        self.assertEqual(tag.name, payload["name"])
+
+    def test_tag_delete_action(self) -> None:
+        """Test deleting a tag."""
+        tag: Tag = helpers.create_tag(
+            user=self.user,
+            name="Dessert"
+        )
+        tag_detail_url = helpers.tag_detail_url(tag.id)
+        response: Response = self.client.delete(tag_detail_url)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        tag_exists: bool = Tag.objects.filter(id=tag.id).exists()
+
+        self.assertFalse(tag_exists)
+
+    def test_tag_delete_action_only_owner_user(self) -> None:
+        """Test deleting a tag by only its owner user."""
+        other_user: User = helpers.create_user(
+            email="other_user@example.com",
+            password="testpass123"
+        )
+
+        tag: Tag = helpers.create_tag(
+            user=other_user,
+            name="Dessert"
+        )
+        tag_detail_url = helpers.tag_detail_url(tag.id)
+        response: Response = self.client.delete(tag_detail_url)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        tag_exists: bool = Tag.objects.filter(id=tag.id).exists()
+
+        self.assertTrue(tag_exists)
