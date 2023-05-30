@@ -78,3 +78,74 @@ class PrivateIngredientsApiTests(TestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]["name"], ingredient.name)
         self.assertEqual(response.data[0]["id"], str(ingredient.id))
+
+    def test_put_update_ingredient(self) -> None:
+        """Test updating an ingredient with put method"""
+        ingredient: models.Ingredient = helpers.create_ingredient(
+            user=self.user,
+            name="Salt"
+        )
+        payload = {
+            "name": "Sugar"
+        }
+        ingredient_detail_endpoint = helpers.ingredient_detail_url(
+            ingredient.id
+        )
+        response: Response = self.client.put(
+            ingredient_detail_endpoint,
+            data=payload,
+            format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        ingredient.refresh_from_db()
+
+        self.assertEqual(ingredient.name, payload["name"])
+
+    def test_patch_update_ingredient(self) -> None:
+        """Test updating an ingredient with patch method"""
+        ingredient: models.Ingredient = helpers.create_ingredient(
+            user=self.user,
+            name="Salt"
+        )
+        payload = {
+            "name": "Sugar"
+        }
+        ingredient_detail_endpoint = helpers.ingredient_detail_url(
+            ingredient.id
+        )
+        response: Response = self.client.patch(
+            ingredient_detail_endpoint,
+            data=payload,
+            format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        ingredient.refresh_from_db()
+
+        self.assertEqual(ingredient.name, payload["name"])
+
+    def test_delete_ingredient(self) -> None:
+        """Test deleting an ingredient."""
+        ingredient: models.Ingredient = helpers.create_ingredient(
+            user=self.user,
+            name="Salt"
+        )
+        ingredient_detail_endpoint = helpers.ingredient_detail_url(
+            ingredient.id
+        )
+        response: Response = self.client.delete(
+            ingredient_detail_endpoint,
+            data={}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        ingredient_is_exist: bool = models.Ingredient.objects.filter(
+            user=self.user,
+            id=ingredient.id
+        ).exists()
+
+        self.assertFalse(ingredient_is_exist)

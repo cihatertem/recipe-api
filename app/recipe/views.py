@@ -1,7 +1,7 @@
 """
 Views for Recipe APIs.
 """
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
@@ -38,7 +38,13 @@ class RecipeViewSet(AuthenticationPermissionMixin, viewsets.ModelViewSet):
         return self.serializer_class
 
 
-class TagViewSet(AuthenticationPermissionMixin, viewsets.ModelViewSet):
+class TagViewSet(
+        AuthenticationPermissionMixin,
+        mixins.DestroyModelMixin,
+        mixins.UpdateModelMixin,
+        mixins.ListModelMixin,
+        viewsets.GenericViewSet
+):
     """View for manage Tag APIs."""
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
@@ -48,7 +54,13 @@ class TagViewSet(AuthenticationPermissionMixin, viewsets.ModelViewSet):
         return self.queryset.filter(user=self.request.user).order_by("name")
 
 
-class IngredientViewSet(AuthenticationPermissionMixin, viewsets.ModelViewSet):
+class IngredientViewSet(
+    AuthenticationPermissionMixin,
+    mixins.DestroyModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
+):
     """View for manage Ingredient APIs"""
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
