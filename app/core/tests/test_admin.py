@@ -78,3 +78,9 @@ class AdminSiteTests(TestCase):
         response: HttpResponse = self.client.get(tag_admin_url)
 
         self.assertEqual(response.status_code, 200)
+
+    def test_ingredient_admin_page_get(self) -> None:
+        ingredient_admin_url = reverse("admin:core_ingredient_changelist")
+        response: HttpResponse = self.client.get(ingredient_admin_url)
+
+        self.assertEqual(response.status_code, 200)

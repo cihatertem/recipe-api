@@ -56,4 +56,5 @@ FROM dev AS linting_testing
 ENV DEBUG_MODE=False
 
 CMD python manage.py makemigrations \
+    && python manage.py migrate \
     && python manage.py test && flake8

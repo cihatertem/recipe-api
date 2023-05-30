@@ -80,7 +80,7 @@ class ModelTests(TestCase):
 
         self.assertEqual(str(recipe), recipe.title)
 
-    def test_create_tag(self):
+    def test_create_tag(self) -> None:
         """Test creating a tag is successfull."""
         user: models.User = helpers.create_user(
             email="test@example.com",
@@ -92,3 +92,13 @@ class ModelTests(TestCase):
         )
 
         self.assertEqual(str(tag), tag.name)
+
+    def test_create_ingredient(self) -> None:
+        """Test creating an ingredient is successful."""
+        user: models.User = helpers.create_user()
+        ingredient: models.Ingredient = helpers.create_ingredient(
+            user=user,
+            name="Salt"
+        )
+
+        self.assertEqual(str(ingredient), ingredient.name)

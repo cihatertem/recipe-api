@@ -8,9 +8,10 @@ from rest_framework.permissions import IsAuthenticated
 from recipe.serializers import (
     RecipeSerializer,
     RecipeDetailSerializer,
-    TagSerializer)
+    TagSerializer,
+    IngredientSerializer)
 
-from core.models import Recipe, Tag
+from core.models import Recipe, Tag, Ingredient
 
 
 class AuthenticationPermissionMixin:
@@ -25,7 +26,7 @@ class RecipeViewSet(AuthenticationPermissionMixin, viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
 
     def get_queryset(self):
-        """Retrieve recipes for authenticated users."""
+        """Filter and retrieve recipes for authenticated users."""
         return self.queryset.filter(user=self.request.user)\
             .order_by("-created_at")
 
@@ -43,6 +44,15 @@ class TagViewSet(AuthenticationPermissionMixin, viewsets.ModelViewSet):
     serializer_class = TagSerializer
 
     def get_queryset(self):
-        """Retriev tags for authenticated owner users."""
-        return self.queryset.filter(user=self.request.user)\
-            .order_by("name")
+        """Filter and retrieve tags for authenticated owner user."""
+        return self.queryset.filter(user=self.request.user).order_by("name")
+
+
+class IngredientViewSet(AuthenticationPermissionMixin, viewsets.ModelViewSet):
+    """View for manage Ingredient APIs"""
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+
+    def get_queryset(self):
+        "Filter and retrieve ingredients for authenticated owner user."
+        return self.queryset.filter(user=self.request.user).order_by("name")
