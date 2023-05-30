@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 
 from decimal import Decimal
 
-from core.models import Recipe, User
+from core.models import Recipe, Tag, User
 
 
 def recipe_detail_url(recipe_id) -> str:
@@ -30,6 +30,17 @@ def create_recipe(user: User, **params: dict) -> Recipe:
     return recipe
 
 
-def create_user(**params) -> User:
+def create_user(
+        email="test@example.com", password="testpass123", **params
+) -> User:
     """Create and return a new user."""
-    return get_user_model().objects.create_user(**params)
+    return get_user_model().objects.create_user(
+        email=email,
+        password=password,
+        **params
+    )
+
+
+def create_tag(user: User, name: str) -> Tag:
+    """Create and return a tag."""
+    return Tag.objects.create(user=user, name=name)

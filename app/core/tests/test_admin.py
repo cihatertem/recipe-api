@@ -71,3 +71,10 @@ class AdminSiteTests(TestCase):
         response: HttpResponse = self.client.get(recipe_admin_url)
 
         self.assertEqual(response.status_code, 200)
+
+    def test_tag_admin_page_get(self) -> None:
+        """Test get request Django Admin page for Tag objects."""
+        tag_admin_url = reverse("admin:core_tag_changelist")
+        response: HttpResponse = self.client.get(tag_admin_url)
+
+        self.assertEqual(response.status_code, 200)

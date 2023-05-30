@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from decimal import Decimal
 
 from core import models
+from utils import helpers
 
 
 class ModelTests(TestCase):
@@ -78,3 +79,16 @@ class ModelTests(TestCase):
         )
 
         self.assertEqual(str(recipe), recipe.title)
+
+    def test_create_tag(self):
+        """Test creating a tag is successfull."""
+        user: models.User = helpers.create_user(
+            email="test@example.com",
+            password="testpass123"
+        )
+        tag = models.Tag.objects.create(
+            user=user,
+            name="Test",
+        )
+
+        self.assertEqual(str(tag), tag.name)
