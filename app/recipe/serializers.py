@@ -10,8 +10,8 @@ class TagSerializer(serializers.ModelSerializer):
     """Serializer for the tags"""
     class Meta:
         model = Tag
-        fields = "__all__"
-        read_only_fields = ["id", "user", "created_at", "updated_at"]
+        fields = ["id", "name"]
+        read_only_fields = ["id"]
 
 
 class RecipeSerializer(serializers.ModelSerializer):
