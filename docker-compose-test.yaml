@@ -6,6 +6,8 @@ services:
     init: true
     env_file:
       - ./environment/variables_tests.txt
+    volumes:
+      - test-static-data:/vol/web
     ports:
       - 8000:8000
     depends_on:

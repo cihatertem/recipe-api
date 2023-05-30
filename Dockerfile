@@ -19,7 +19,11 @@ RUN python -m venv /venv \
     --gecos "" \
     --disabled-password \
     --no-create-home \
-    django-user
+    django-user \
+    && mkdir -p /vol/web/media \
+    && mkdir -p  /vol/web/static \
+    && chown -R django-user:django-user /vol \
+    && chmod -R 755 /vol
 
 ENV PATH="/venv/bin:$PATH"
 

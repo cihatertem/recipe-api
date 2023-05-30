@@ -8,6 +8,8 @@ services:
       - ./variables.txt
     ports:
       - 8000:8000
+    volumes:
+      - static-data:/vol/web
     depends_on:
       db:
         condition: service_healthy
