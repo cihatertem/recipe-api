@@ -434,3 +434,76 @@ class PrivateReciperApiTests(TestCase):
             ).exists()
 
             self.assertTrue(ingredient_is_exist)
+
+    def test_create_ingredient_on_update(self) -> None:
+        """Test creating and ingredient when updating a recipe."""
+        recipe: models.Recipe = helpers.create_recipe(user=self.user)
+        payload = {
+            "ingredients": [
+                {"name": "Tomato"}
+            ]
+        }
+        recipe_detail_url = helpers.recipe_detail_url(recipe.id)
+        response: Response = self.client.patch(
+            recipe_detail_url,
+            data=payload,
+            format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        new_ingredient: models.Ingredient = models.Ingredient.objects.get(
+            user=self.user,
+            name="Tomato"
+        )
+
+        self.assertIn(new_ingredient, recipe.ingredients.all())
+
+    def test_update_recipe_assign_ingredient(self) -> None:
+        """Test assinging an existing ingredient when updating a recipe."""
+        ingredient_one: models.Ingredient = helpers.create_ingredient(
+            user=self.user,
+            name="Pepper"
+        )
+        recipe: models.Recipe = helpers.create_recipe(user=self.user)
+        recipe.ingredients.add(ingredient_one)
+
+        ingredient_two: models.Ingredient = helpers.create_ingredient(
+            user=self.user,
+            name="Chili"
+        )
+        payload = {
+            "ingredients": [
+                {"name": "Chili"}
+            ]
+        }
+        recipe_detail_url = helpers.recipe_detail_url(recipe.id)
+        response: Response = self.client.patch(
+            recipe_detail_url,
+            data=payload,
+            format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn(ingredient_two, recipe.ingredients.all())
+        self.assertNotIn(ingredient_one, recipe.ingredients.all())
+
+    def test_clear_recipe_ingredients(self) -> None:
+        """Test clearing a recipe's ingredients."""
+        ingredient: models.Ingredient = helpers.create_ingredient(
+            user=self.user,
+            name="Garlic"
+        )
+
+        recipe: models.Recipe = helpers.create_recipe(user=self.user)
+        recipe.ingredients.add(ingredient)
+        payload = {"ingredients": []}
+        recipe_detail_url = helpers.recipe_detail_url(recipe.id)
+        response: Response = self.client.patch(
+            recipe_detail_url,
+            data=payload,
+            format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(recipe.ingredients.count(), 0)
