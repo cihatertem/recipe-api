@@ -3,7 +3,7 @@ Serializers for Recipe APIs.
 """
 from rest_framework import serializers
 
-from core.models import Recipe, Tag
+from core.models import Recipe, Tag, User
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -23,20 +23,53 @@ class RecipeSerializer(serializers.ModelSerializer):
         fields = ["id", "title", "time_minutes", "price", "link", "tags"]
         read_only_fields = ["id"]
 
-    def create(self, validated_data: dict):
-        """Create a recipe."""
+    def create(self, validated_data: dict) -> Recipe:
+        """Create a recipe with creation and adding tags."""
         validated_data["user"] = self.context["request"].user
         tags = validated_data.pop("tags", [])
         recipe: Recipe = Recipe.objects.create(**validated_data)
 
-        for tag in tags:
-            tag_obj, created = Tag.objects.get_or_create(
-                user=validated_data["user"],
-                **tag
-            )
-            recipe.tags.add(tag_obj)
+        self._get_or_create_tags(
+            user=validated_data["user"],
+            tags=tags,
+            recipe=recipe
+        )
 
         return recipe
+
+    def update(self, instance: Recipe, validated_data: dict) -> Recipe:
+        """Update a recipe with creation, adding, clearing tags."""
+        tags = validated_data.pop("tags", None)
+        request_user: User = self.context["request"].user
+
+        if tags is not None:
+            instance.tags.clear()
+            self._get_or_create_tags(
+                user=request_user,
+                tags=tags,
+                recipe=instance)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+
+        return instance
+
+    def _get_or_create_tags(
+            self,
+            user: User,
+            tags: list[Tag],
+            recipe: Recipe
+    ) -> None:
+        """Handle getting or creating tags as needed."""
+        for tag in tags:
+            existing_tag, created = Tag.objects.get_or_create(
+                user=user,
+                **tag,
+            )
+
+            recipe.tags.add(existing_tag)
 
 
 class RecipeDetailSerializer(RecipeSerializer):
