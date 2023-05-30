@@ -11,12 +11,8 @@ from rest_framework.test import APIClient
 from rest_framework.response import Response
 
 
-from core.models import Recipe
-from utils.helpers import (
-    create_recipe,
-    recipe_detail_url,
-    create_user
-)
+from core.models import Recipe, Tag
+from utils import helpers
 from recipe.serializers import RecipeSerializer, RecipeDetailSerializer
 
 
@@ -44,15 +40,15 @@ class PrivateReciperApiTests(TestCase):
         """Client and authenticated user setup for requests' tests."""
 
         self.client = APIClient()
-        self.user = create_user()
+        self.user = helpers.create_user()
 
         self.client.force_authenticate(self.user)
 
     def test_retrieve_recipes(self) -> None:
         """Test retrieving a list of recipes"""
-        create_recipe(user=self.user)
-        create_recipe(user=self.user)
-        create_recipe(user=self.user)
+        helpers.create_recipe(user=self.user)
+        helpers.create_recipe(user=self.user)
+        helpers.create_recipe(user=self.user)
 
         response: Response = self.client.get(RECIPE_URL)
 
@@ -63,13 +59,13 @@ class PrivateReciperApiTests(TestCase):
         self.assertEqual(serializer.data, response.data)
 
     def test_recipe_list_limited_to_authenticated_request_user(self) -> None:
-        other_user = create_user(
+        other_user = helpers.create_user(
             email="other@example.com",
             password="testpass123"
         )
 
-        create_recipe(user=other_user)
-        create_recipe(user=self.user)
+        helpers.create_recipe(user=other_user)
+        helpers.create_recipe(user=self.user)
 
         response: Response = self.client.get(RECIPE_URL)
 
@@ -81,8 +77,8 @@ class PrivateReciperApiTests(TestCase):
 
     def test_get_recipe_detail(self) -> None:
         """Test get specific recipe detail with recipe ID."""
-        recipe: Recipe = create_recipe(user=self.user)
-        url = recipe_detail_url(recipe.id)
+        recipe: Recipe = helpers.create_recipe(user=self.user)
+        url = helpers.recipe_detail_url(recipe.id)
         response: Response = self.client.get(url)
 
         serializer = RecipeDetailSerializer(recipe, many=False)
@@ -114,13 +110,13 @@ class PrivateReciperApiTests(TestCase):
     def test_partial_update_recipe(self) -> None:
         """Test partial update/patch action of recipe object."""
         original_link = "https://example.com/recipe"
-        recipe: Recipe = create_recipe(
+        recipe: Recipe = helpers.create_recipe(
             user=self.user,
             title="Test Recipe",
             link=original_link
         )
         payload = {"title": "Test Recipe Updated"}
-        api_endpoint = recipe_detail_url(recipe.id)
+        api_endpoint = helpers.recipe_detail_url(recipe.id)
         response: Response = self.client.patch(api_endpoint, data=payload)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -133,7 +129,7 @@ class PrivateReciperApiTests(TestCase):
 
     def test_full_update_recipe(self) -> None:
         """Test full update / put action of a recipe object."""
-        recipe: Recipe = create_recipe(
+        recipe: Recipe = helpers.create_recipe(
             user=self.user,
             title="Test Recipe",
             description="Test description for Test Recipe.",
@@ -147,7 +143,7 @@ class PrivateReciperApiTests(TestCase):
             "description": "Test description for Test Recipe.",
             "price": Decimal("5.12"),
         }
-        put_endpoint = recipe_detail_url(recipe.id)
+        put_endpoint = helpers.recipe_detail_url(recipe.id)
 
         response: Response = self.client.put(put_endpoint, data=payload)
 
@@ -161,32 +157,32 @@ class PrivateReciperApiTests(TestCase):
 
     def test_update_recipe_user_returns_error(self) -> None:
         """Test update recipe user should return an error."""
-        recipe: Recipe = create_recipe(
+        recipe: Recipe = helpers.create_recipe(
             user=self.user,
             title="Test Recipe",
             description="Test description for Test Recipe.",
             price=Decimal("5.12"),
             link="https://example.com/recipe-test"
         )
-        new_user = create_user(email="new_user@example.com",
-                               password="testpass123")
+        new_user = helpers.create_user(email="new_user@example.com",
+                                       password="testpass123")
 
         payload = {"user": new_user}
-        patch_endpoint = recipe_detail_url(recipe.id)
+        patch_endpoint = helpers.recipe_detail_url(recipe.id)
         self.client.patch(patch_endpoint, data=payload)
 
         self.assertEqual(recipe.user, self.user)
 
     def test_delete_recipe(self) -> None:
         """Test delete action for a recipe object."""
-        recipe: Recipe = create_recipe(
+        recipe: Recipe = helpers.create_recipe(
             user=self.user,
             title="Test Recipe",
             description="Test description for Test Recipe.",
             price=Decimal("5.12"),
             link="https://example.com/recipe-test"
         )
-        delete_endpoint = recipe_detail_url(recipe.id)
+        delete_endpoint = helpers.recipe_detail_url(recipe.id)
         response: Response = self.client.delete(delete_endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -197,15 +193,15 @@ class PrivateReciperApiTests(TestCase):
 
     def test_delete_recipe_other_users_error(self) -> None:
         """Test trying to delete another users' recipes gives error."""
-        other_user = create_user(
+        other_user = helpers.create_user(
             email="other_user@example.com",
             password="testpass123"
         )
-        other_user_recipe = create_recipe(
+        other_user_recipe = helpers.create_recipe(
             user=other_user,
             title="Other User's Recipe"
         )
-        recipe_endpoint = recipe_detail_url(other_user_recipe.id)
+        recipe_endpoint = helpers.recipe_detail_url(other_user_recipe.id)
         response: Response = self.client.delete(recipe_endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -215,3 +211,71 @@ class PrivateReciperApiTests(TestCase):
         ).exists()
 
         self.assertTrue(other_user_recipe_exists)
+
+    def test_create_recipe_with_new_tags(self) -> None:
+        """Test creating a recipe with new tags."""
+        payload = {
+            "title": "Thai Pai Chicken",
+            "time_minutes": "30",
+            "price": Decimal("2.50"),
+            "tags": [
+                {"name": "Thai"},
+                {"name": "Dinner"}
+            ]
+        }
+        response: Response = self.client.post(
+            RECIPE_URL,
+            data=payload,
+            format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        recipes = Recipe.objects.filter(user=self.user, title=payload["title"])
+
+        self.assertEqual(recipes[0].tags.count(), 2)
+
+        for tag in payload["tags"]:
+            tag_is_exists: bool = recipes[0].tags.filter(
+                name=tag["name"],
+                user=self.user
+            ).exists()
+
+            self.assertTrue(tag_is_exists)
+
+    def test_create_recipe_with_existing_tags(self) -> None:
+        """Test creating a recipe with existing tags."""
+        turkish_tag: Tag = helpers.create_tag(user=self.user, name="Turkish")
+        payload = {
+            "title": "Imam Bayildi",
+            "time_minutes": 50,
+            "price": Decimal("20.70"),
+            "tags": [
+                {"name": "Turkish"},
+                {"name": "Aubergine"}
+            ]
+        }
+        reponse: Response = self.client.post(
+            RECIPE_URL,
+            data=payload,
+            format="json"
+        )
+
+        self.assertEqual(reponse.status_code, status.HTTP_201_CREATED)
+
+        recipes = Recipe.objects.filter(user=self.user)
+
+        self.assertEqual(recipes.count(), 1)
+
+        recipe: Recipe = recipes[0]
+
+        self.assertEqual(recipe.tags.count(), 2)
+        self.assertIn(turkish_tag, recipe.tags.all())
+
+        for tag in payload["tags"]:
+            tag_is_exists: bool = recipe.tags.filter(
+                user=self.user,
+                name=tag["name"]
+            ).exists()
+
+            self.assertTrue(tag_is_exists)
