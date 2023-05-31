@@ -38,7 +38,7 @@ class PublicRecipeApiTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class PrivateReciperApiTests(TestCase):
+class PrivateRecipeApiTests(TestCase):
     """Test authenticated API requests."""
 
     def setUp(self) -> None:
@@ -512,6 +512,80 @@ class PrivateReciperApiTests(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(recipe.ingredients.count(), 0)
+
+    def test_filter_by_tags(self) -> None:
+        """Test filtering recipes by tags."""
+        recipe_one: models.Recipe = helpers.create_recipe(
+            user=self.user,
+            title="Pudding"
+        )
+        recipe_two: models.Recipe = helpers.create_recipe(
+            user=self.user,
+            title="Tea"
+        )
+        recipe_three: models.Recipe = helpers.create_recipe(
+            user=self.user,
+            title="Fish&Chips"
+        )
+        tag_one: models.Tag = helpers.create_tag(
+            user=self.user,
+            name="Dessert"
+        )
+        tag_two: models.Tag = helpers.create_tag(
+            user=self.user,
+            name="Drink"
+        )
+        recipe_one.tags.add(tag_one)
+        recipe_two.tags.add(tag_two)
+
+        params = {
+            "tags": f"{tag_one.id}, {tag_two.id}"
+        }
+        response: Response = self.client.get(RECIPE_URL, params)
+
+        serializer_one = RecipeSerializer(recipe_one)
+        serializer_two = RecipeSerializer(recipe_two)
+        serializer_three = RecipeSerializer(recipe_three)
+
+        self.assertIn(serializer_one.data, response.data)
+        self.assertIn(serializer_two.data, response.data)
+        self.assertNotIn(serializer_three.data, response.data)
+
+    def test_filter_by_ingredients(self) -> None:
+        """Test filtering recipes by ingredients."""
+        recipe_one: models.Recipe = helpers.create_recipe(
+            user=self.user,
+            title="Pudding"
+        )
+        recipe_two: models.Recipe = helpers.create_recipe(
+            user=self.user,
+            title="Tea"
+        )
+        recipe_three: models.Recipe = helpers.create_recipe(
+            user=self.user,
+            title="Fish&Chips"
+        )
+        ingredient_one: models.Ingredient = helpers.create_ingredient(
+            user=self.user,
+            name="Cocoa"
+        )
+        ingredient_two: models.Ingredient = helpers.create_ingredient(
+            user=self.user,
+            name="Water"
+        )
+        recipe_one.ingredients.add(ingredient_one)
+        recipe_two.ingredients.add(ingredient_two)
+        params = {
+            "ingredients": f"{ingredient_one.id}, {ingredient_two.id}"
+        }
+        response: Response = self.client.get(RECIPE_URL, params)
+        serializer_one = RecipeSerializer(recipe_one)
+        serializer_two = RecipeSerializer(recipe_two)
+        serializer_three = RecipeSerializer(recipe_three)
+
+        self.assertIn(serializer_one.data, response.data)
+        self.assertIn(serializer_two.data, response.data)
+        self.assertNotIn(serializer_three.data, response.data)
 
 
 class ImageUploadTests(TestCase):

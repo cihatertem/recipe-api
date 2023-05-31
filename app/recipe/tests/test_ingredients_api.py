@@ -1,6 +1,8 @@
 """
 Tests for ingredients APIs.
 """
+from decimal import Decimal
+
 from django.test import TestCase
 from django.urls import reverse
 
@@ -149,3 +151,61 @@ class PrivateIngredientsApiTests(TestCase):
         ).exists()
 
         self.assertFalse(ingredient_is_exist)
+
+    def test_filter_ingredients_assigned_to_recipes(self) -> None:
+        """Test listing ingredients by thos assigned to recipes."""
+        ingredient_one: models.Ingredient = helpers.create_ingredient(
+            user=self.user,
+            name="Apple"
+        )
+        ingredient_two: models.Ingredient = helpers.create_ingredient(
+            user=self.user,
+            name="Turkey"
+        )
+        recipe: models.Recipe = helpers.create_recipe(
+            title="Apple Crumble",
+            time_minutes=5,
+            price=Decimal("4.55"),
+            user=self.user
+        )
+        recipe.ingredients.add(ingredient_one)
+        response: Response = self.client.get(
+            INGREDIENTS_URL,
+            {"assigned_only": 1}
+        )
+        serializer_one = IngredientSerializer(ingredient_one)
+        serializer_two = IngredientSerializer(ingredient_two)
+
+        self.assertIn(serializer_one.data, response.data)
+        self.assertNotIn(serializer_two.data, response.data)
+
+    def test_filtered_ingredients_unique(self) -> None:
+        """Test filtered ingredients return a unique/distinct list."""
+        ingredient_one: models.Ingredient = helpers.create_ingredient(
+            user=self.user,
+            name="Apple"
+        )
+        helpers.create_ingredient(
+            user=self.user,
+            name="Turkey"
+        )
+        recipe_one: models.Recipe = helpers.create_recipe(
+            title="Apple Crumble",
+            time_minutes=5,
+            price=Decimal("4.55"),
+            user=self.user
+        )
+        recipe_two: models.Recipe = helpers.create_recipe(
+            title="Orange Crumble",
+            time_minutes=15,
+            price=Decimal("14.55"),
+            user=self.user
+        )
+        recipe_one.ingredients.add(ingredient_one)
+        recipe_two.ingredients.add(ingredient_one)
+        response: Response = self.client.get(
+            INGREDIENTS_URL,
+            {"assigned_only": 1}
+        )
+
+        self.assertEqual(len(response.data), 1)
