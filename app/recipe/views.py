@@ -1,15 +1,19 @@
 """
 Views for Recipe APIs.
 """
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.request import Request
 
 from recipe.serializers import (
     RecipeSerializer,
     RecipeDetailSerializer,
     TagSerializer,
-    IngredientSerializer)
+    IngredientSerializer,
+    RecipeImageSerializer)
 
 from core.models import Recipe, Tag, Ingredient
 
@@ -48,8 +52,23 @@ class RecipeViewSet(AuthenticationPermissionMixin, viewsets.ModelViewSet):
         """Change and return the serializer class for request."""
         if self.action == "list":
             return RecipeSerializer
+        elif self.action == "upload_image":
+            return RecipeImageSerializer
 
         return self.serializer_class
+
+    @action(methods=["POST"], detail=True, url_path="upload-image")
+    def upload_image(self, request: Request, pk=None) -> Response:
+        """Upload an image to recipe."""
+        recipe: Recipe = self.get_object()
+        serializer = self.get_serializer(recipe, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TagViewSet(BaseRecipeActionsViewSet):

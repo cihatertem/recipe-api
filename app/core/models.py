@@ -1,8 +1,8 @@
 """
 Dabase models.
 """
-import uuid
 import os
+import uuid
 
 from django.conf import settings
 from django.db import models
@@ -57,7 +57,8 @@ class Recipe(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     tags = models.ManyToManyField("Tag")
     ingredients = models.ManyToManyField("Ingredient")
-    image = models.ImageField(null=True, upload_to=recipe_image_file_path)
+    image = models.ImageField(
+        null=True, upload_to=recipe_image_file_path)
 
     def __str__(self) -> str:
         return self.title

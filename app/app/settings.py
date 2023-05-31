@@ -161,6 +161,7 @@ SPECTACULAR_SETTINGS = {
         "email": "cihatertem@gmail.com"
     },
     'VERSION': '1.0.0',
+    "COMPONENT_SPLIT_REQUEST": True  # to image upload in swagger UI
     # 'SERVE_INCLUDE_SCHEMA': False,
 }
 

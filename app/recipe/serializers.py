@@ -122,3 +122,14 @@ class RecipeDetailSerializer(RecipeSerializer):
             ["description", "created_at", "updated_at"]
         read_only_fields = RecipeSerializer.Meta.read_only_fields + \
             ["created_at", "updated_at"]
+
+
+class RecipeImageSerializer(serializers.ModelSerializer):
+    """Serializer for uploading images to recipes."""
+    class Meta:
+        model = Recipe
+        fields = ["id", "image"]
+        read_only_fields = ["id"]
+        extra_kwargs = {
+            "image": {"required": True}
+        }
