@@ -61,6 +61,10 @@ class RecipeViewSet(AuthenticationPermissionMixin, viewsets.ModelViewSet):
     def upload_image(self, request: Request, pk=None) -> Response:
         """Upload an image to recipe."""
         recipe: Recipe = self.get_object()
+
+        if recipe.image:
+            recipe.image.delete()
+
         serializer = self.get_serializer(recipe, data=request.data)
 
         if serializer.is_valid():
