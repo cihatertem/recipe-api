@@ -10,9 +10,12 @@ venv/
 environment/
 Dockerfile
 .docker
-docker-compose.yaml
+docker-compose*
 db.sqlite3
 app/__pycache__/
 app/*/__pycache__/
 app/*/*/__pycache__/
 app/*/*/*/__pycache__/
+aws_sshkey/
+nginx/
+variables_sample.txt
