@@ -1,4 +1,4 @@
-name: Checks with Containers
+name: Checks and Auto Merge to Prod
 on:
   push:
     branches:
