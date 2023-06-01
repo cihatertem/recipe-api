@@ -2,7 +2,7 @@ name: Checks with Containers
 on:
   push:
     branches:
-      - dev
+      - test
 
 jobs:
   test-lint:
@@ -26,4 +26,13 @@ jobs:
           echo "POSTGRES_PASSWORD=${{secrets.POSTGRES_PASSWORD}}" >> variables.txt
           echo "POSTGRES_DB=${{secrets.POSTGRES_DB}}" >> variables.txt
       - name: Test & Lint
+        id: test_lint
         run: docker-compose -f docker-compose-checks.yaml up --build app-test
+      - name: Merge to test branch
+        if: steps.test_lint.outcome == 'success'
+        uses: devmasx/merge-branch@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          type: now
+          message: Auto merge from dev branch
+          target_branch: prod
