@@ -1,4 +1,4 @@
-name: Checks and Auto Merge to Prod
+name: Checks and Auto Merge to Main
 on:
   push:
     branches:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   test-lint-merge-prog:
-    name: Test & Lint & Merge to Prod
+    name: Test & Lint & Merge to Main
     runs-on: ubuntu-22.04
 
     steps:
@@ -35,4 +35,4 @@ jobs:
           github_token: ${{ secrets.REPO_TOKEN}}
           type: now
           message: Auto merge from test branch
-          target_branch: prod
+          target_branch: main
