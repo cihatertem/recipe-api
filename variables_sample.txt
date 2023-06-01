@@ -1,0 +1,7 @@
+SECRET_KEY=changeme
+DEBUG_MODE=0||1-choose-1-for-debug-true
+POSTGRES_USER=changeme
+POSTGRES_PASSWORD=changeme
+POSTGRES_DB=changeme
+DB_HOST=docker-compose-db-service-name
+ALLOWED_HOSTS=127.0.0.1,localhost,domainname,removeunnecessaryhost

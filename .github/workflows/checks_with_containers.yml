@@ -1,0 +1,29 @@
+name: Checks with Containers
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  test-lint:
+    name: Test & Lint
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{secrets.DOCKERHUB_USER}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Create variable.txt
+        run: |
+          echo "SECRET_KEY=${{secrets.DJANGO_SECRET_KEY}}" >> variables.txt
+          echo "DB_HOST=${{secrets.DB_HOST}}" >> variables.txt
+          echo "DEBUG_MODE=${{secrets.DEBUG_MODE}}" >> variables.txt
+          echo "POSTGRES_USER=${{secrets.POSTGRES_USER}}" >> variables.txt
+          echo "POSTGRES_PASSWORD=${{secrets.POSTGRES_PASSWORD}}" >> variables.txt
+          echo "POSTGRES_DB=${{secrets.POSTGRES_DB}}" >> variables.txt
+      - name: Test & Lint
+        run: docker-compose -f docker-compose-checks.yaml up --build app-test

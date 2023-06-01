@@ -1,0 +1,2 @@
+django-cleanup~=7.0.0
+uwsgi~=2.0.21
