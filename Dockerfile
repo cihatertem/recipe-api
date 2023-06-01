@@ -29,7 +29,7 @@ ENV PATH="/venv/bin:$PATH"
 
 ENV PYTHONUNBUFFERED=1
 
-ENV DEBUG_MODE=True
+ENV DEBUG_MODE=1
 
 EXPOSE 8000
 
@@ -57,7 +57,7 @@ CMD python manage.py wait_for_db \
 ### Linting & Test Stage
 FROM dev AS linting_testing
 
-ENV DEBUG_MODE=False
+ENV DEBUG_MODE=0
 
 CMD python manage.py makemigrations \
     && python manage.py migrate \
@@ -86,5 +86,7 @@ USER django-user
 EXPOSE 9000
 
 ENV PATH="/scripts:/venv/bin:$PATH"
+
+ENV DEBUG_MODE=0
 
 CMD [ "run.sh" ]
