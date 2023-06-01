@@ -31,9 +31,9 @@ class RecipeSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = [
             "id", "title", "time_minutes", "price", "link", "tags",
-            "ingredients"
+            "ingredients", "image"
         ]
-        read_only_fields = ["id"]
+        read_only_fields = ["id", "image"]
 
     def create(self, validated_data: dict) -> Recipe:
         """Create a recipe with creation and adding tags."""
@@ -119,7 +119,7 @@ class RecipeDetailSerializer(RecipeSerializer):
     """Serializer for recipe detail view."""
     class Meta(RecipeSerializer.Meta):
         fields = RecipeSerializer.Meta.fields + \
-            ["description", "created_at", "updated_at", "image"]
+            ["description", "created_at", "updated_at"]
         read_only_fields = RecipeSerializer.Meta.read_only_fields + \
             ["created_at", "updated_at"]
 
